@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.HttpLogging;
-using OpenTelemetry.Exporter;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
@@ -23,6 +22,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddHttpClient();
 builder.Services.AddOpenTelemetry()
+    // 这边配置的 Resource 是全局的，Log、Metric、Trace 都会使用这个 Resource
     .ConfigureResource(resourceBuilder =>
     {
         resourceBuilder
@@ -32,28 +32,20 @@ builder.Services.AddOpenTelemetry()
     .WithTracing(tracerBuilder =>
     {
         tracerBuilder
-            .AddAspNetCoreInstrumentation()
-            .AddHttpClientInstrumentation()
-            .AddOtlpExporter(options => options.Endpoint = new Uri("http://localhost:8200"))
-            .AddJaegerExporter(options =>
+            .AddAspNetCoreInstrumentation(options =>
             {
-                options.Protocol = JaegerExportProtocol.HttpBinaryThrift;
-                options.AgentHost = "localhost";
-                options.AgentPort = 14268;
-            });
+                options.Filter =
+                    httpContent => httpContent.Request.Path.StartsWithSegments("/swagger") == false;
+            })
+            .AddHttpClientInstrumentation()
+            .AddSource("FooActivitySource")
+            .AddOtlpExporter(options => options.Endpoint = new Uri("http://localhost:8200"));
     }).WithMetrics(meterBuilder =>
     {
         meterBuilder
-            .ConfigureResource(resourceBuilder =>
-            {
-                resourceBuilder
-                    .AddService("FooService", "TestNamespace", "1.0.0")
-                    .AddTelemetrySdk();
-            })
-            .AddMeter("FooMeter")
             .AddAspNetCoreInstrumentation()
             .AddHttpClientInstrumentation()
-            .AddPrometheusExporter()
+            .AddMeter("FooMeter")
             .AddOtlpExporter(otlpOptions => otlpOptions.Endpoint = new Uri("http://localhost:8200"));
     });
 
@@ -67,8 +59,6 @@ builder.Services.AddLogging(loggingBuilder =>
 });
 
 var app = builder.Build();
-
-app.UseOpenTelemetryPrometheusScrapingEndpoint();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

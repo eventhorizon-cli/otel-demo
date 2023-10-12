@@ -31,7 +31,12 @@ builder.Services.AddOpenTelemetry()
     .WithTracing(options =>
     {
         options
-            .AddAspNetCoreInstrumentation()
+            .AddAspNetCoreInstrumentation(options =>
+            {
+                // 配置 Filter，忽略 swagger 的请求
+                options.Filter =
+                    httpContent => httpContent.Request.Path.StartsWithSegments("/swagger") == false;
+            })
             .AddHttpClientInstrumentation()
             .AddOtlpExporter(otlpOptions => otlpOptions.Endpoint = new Uri("http://localhost:8200"));
     }).WithMetrics(options =>
@@ -42,7 +47,7 @@ builder.Services.AddOpenTelemetry()
             .AddOtlpExporter(otlpOptions => otlpOptions.Endpoint = new Uri("http://localhost:8200"));
     });
 
-builder.Services.AddLogging(loggingBuilder =>
+builder.Services.AddLogging(loggingBuilder =>   
 {
     loggingBuilder.AddOpenTelemetry(options =>
     {

@@ -1,8 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication1", "WebApplication1\WebApplication1.csproj", "{4057B2ED-9DDC-4395-8B6D-A03E72B04C3C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FooService", "FooService\FooService.csproj", "{4057B2ED-9DDC-4395-8B6D-A03E72B04C3C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication2", "WebApplication2\WebApplication2.csproj", "{C96621B4-49F5-4758-B901-E61A9D4F9379}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BarService", "BarService\BarService.csproj", "{C96621B4-49F5-4758-B901-E61A9D4F9379}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

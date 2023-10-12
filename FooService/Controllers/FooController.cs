@@ -7,7 +7,7 @@ using OpenTelemetry;
 public class FooController : ControllerBase
 {
     private static readonly ActivitySource FooActivitySource
-        = new ActivitySource("FooSource");
+        = new ActivitySource("FooActivitySource");
     private static readonly Counter<int> FooCounter
         = new Meter("FooMeter").CreateCounter<int>("FooCounter");
 
@@ -30,7 +30,7 @@ public class FooController : ControllerBase
         Baggage.SetBaggage("FooBaggage2", "FooValue2");
 
         var client = _clientFactory.CreateClient();
-        var result = await client.GetStringAsync("http://localhost:5069/api/bar");
+        var result = await client.GetStringAsync("http://localhost:5002/api/bar");
 
         using var activity = FooActivitySource.StartActivity("FooActivity");
         activity?.AddTag("FooTag", "FooValue");

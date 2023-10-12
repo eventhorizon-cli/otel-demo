@@ -1,4 +1,4 @@
-namespace WebApplication2;
+namespace BarService;
 
 public class WeatherForecast
 {
